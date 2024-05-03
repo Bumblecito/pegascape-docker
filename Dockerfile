@@ -2,7 +2,7 @@ FROM node:14.21.3-bullseye-slim AS builder
 
 WORKDIR /opt/app
 RUN apt update && apt install git python build-essential -y
-RUN git clone https://github.com/Ramzus/pegascape.git .
+RUN git clone https://github.com/Bumblecito/PegaScape.git .
 RUN npm install
 
 COPY pegascape.sh /opt/app
