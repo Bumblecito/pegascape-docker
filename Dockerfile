@@ -1,17 +1,13 @@
-FROM node:9.2
+FROM docker.io/library/node:9.2
 
-WORKDIR /opt/app
+ADD . /pegaswitch
+WORKDIR /pegaswitch
+
 RUN git clone https://github.com/Bumblecito/PegaScape.git
 
 EXPOSE 80
 EXPOSE 53/UDP
 EXPOSE 8100
-
-COPY . /opt/app/.
-
-RUN rm -rf /opt/app/node_modules/
-RUN mkdir -p /opt/node_modules
-RUN ln -s /opt/node_modules/ /opt/app/.
 
 RUN npm install
 
