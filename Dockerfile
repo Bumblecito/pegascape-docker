@@ -11,4 +11,4 @@ COPY . /opt/app/.
 RUN npm install
 RUN npm install pty.js
 
-CMD ["npm", "start"]
+CMD node start.js --webapplet --ip $IP_ADDR --host $IP_ADDR
