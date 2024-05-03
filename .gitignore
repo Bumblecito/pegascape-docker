@@ -1,0 +1,13 @@
+files
+memdump.json
+.DS_Store
+node_modules
+.shell_history
+bundle.js
+memdumps
+dumps
+sourcemap
+build
+*~
+pegaswitch.log
+startpega_webapplet.bat
