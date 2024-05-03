@@ -1,7 +1,7 @@
 FROM docker.io/library/node:9.2
 
-EXPOSE 53
 EXPOSE 80
+EXPOSE 53/UDP
 EXPOSE 8100
 
 WORKDIR /opt/app
