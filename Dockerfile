@@ -1,6 +1,6 @@
 FROM node:8 
 
-RUN git clone https://github.com/Ramzus/pegascape.git
+RUN git clone https://github.com/Bumblecito/PegaScape.git
 EXPOSE 80
 EXPOSE 53/UDP
 EXPOSE 8100
