@@ -1,4 +1,4 @@
-FROM docker.io/library/node:9.2 AS builder
+FROM docker.io/library/node:9.2
 
 WORKDIR /opt/app
 RUN git clone https://github.com/Bumblecito/PegaScape.git
@@ -11,7 +11,7 @@ EXPOSE 8100
 RUN groupadd -r pegascape && useradd --no-log-init -r -g pegascape pegascape
 
 WORKDIR /opt/app
-COPY --from=builder /opt/app ./
+COPY --from=docker.io/library/node:9.2 /opt/app ./
 
 RUN chown -R pegascape:pegascape /opt/app
 
