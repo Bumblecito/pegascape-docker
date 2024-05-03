@@ -1,30 +1,21 @@
-FROM node:14.21.3-bullseye-slim AS builder
-
-LABEL maintainer="bumblecito"
-
-WORKDIR /opt/app
-RUN apt update && apt install git python build-essential -y
-RUN git clone https://github.com/Bumblecito/PegaScape.git .
-RUN npm install
-
-COPY pegascape.sh /opt/app
-
-FROM node:14.21.3-bullseye-slim
-
-RUN groupadd -r pegascape && useradd --no-log-init -r -g pegascape pegascape
-
-WORKDIR /opt/app
-COPY --from=builder /opt/app ./
-
-RUN chown -R pegascape:pegascape /opt/app
-
-ARG HOST_IP=192.168.0.1
-ENV HOST_IP $HOST_IP
+FROM node:9.2
 
 EXPOSE 80
 EXPOSE 53/UDP
 EXPOSE 8100
 
-USER pegascape
+WORKDIR /opt/app
+RUN git clone https://github.com/Bumblecito/PegaScape.git .
 
-ENTRYPOINT ["/bin/sh", "pegascape.sh", "&"]
+COPY . /opt/app/.
+
+RUN rm -rf /opt/app/node_modules/
+RUN mkdir -p /opt/node_modules
+RUN ln -s /opt/node_modules/ /opt/app/.
+
+RUN npm install
+
+ARG HOST_IP=192.168.1.110
+ENV HOST_IP $IP_ADDR
+
+CMD node start.js --webapplet --ip $IP_ADDR --host IP_ADDR
