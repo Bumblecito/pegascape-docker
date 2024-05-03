@@ -1,6 +1,7 @@
-FROM node:8
+FROM node:9.2
 
-RUN git clone https://github.com/Ramzus/pegascape.git .
+WORKDIR /opt/app
+RUN git clone https://github.com/Bumblecito/PegaScape.git
 
 ARG IP_ADDR=192.168.1.110
 ENV IP_ADDR= $IP_ADDR=
@@ -8,8 +9,6 @@ ENV IP_ADDR= $IP_ADDR=
 EXPOSE 80
 EXPOSE 53/UDP
 EXPOSE 8100
-
-WORKDIR /opt/app
 
 COPY . /opt/app/.
 
