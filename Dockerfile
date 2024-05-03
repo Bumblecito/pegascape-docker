@@ -18,4 +18,4 @@ RUN ln -s /opt/node_modules/ /opt/app/.
 RUN git clone https://github.com/Bumblecito/PegaScape.git .
 RUN npm install
 
-CMD ["npm", "start"]
+CMD ["npm", "node start.js --webapplet --ip $IP_ADDR --host $IP_ADDR"]
