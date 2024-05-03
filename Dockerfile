@@ -16,4 +16,4 @@ RUN ln -s /opt/node_modules/ /opt/app/.
 
 RUN npm install
 
-CMD ["npm", "start"]
+CMD node start.js --webapplet --ip "$HOST_IP" --host "$HOST_IP" 
