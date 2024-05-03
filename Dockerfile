@@ -1,4 +1,4 @@
-FROM node:latest
+FROM docker.io/library/node:9.2
 
 EXPOSE 53
 EXPOSE 80
