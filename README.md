@@ -55,14 +55,20 @@ for exploit to work
 `-t`
 options is needed to attach a tty to container, in order to keep alive the node command
 
-Configure switch to access pegascape
-Modify your internet configuration on switch to use as primary and secondary the host IP of the machine which is used to launch pegascape. You won't be able to access to internet with this configuration, but pegascape will still be available in order to launch the deja-vu exploit.
+## Configure switch to access pegascape
+
+Modify your internet configuration on switch to use as primary and secondary to the device IP which is used to launch PegaScape.
 
 You can install Fake News with <a href="https://github.com/noahc3/fakenews-injector/releases/latest">Fake News Injector</a>
 
 ## Running PegaScape and Al-Azif PS4/PS5 self-hosting exploits with macvlan driver network
 
-You can run these images together into the same proyect with the same macvlan driver network with this `compose.yml`. Change the IPs to those of your router. E.g. `192.168.1.254` to `192.168.0.1`.
+You can run these images together into the same proyect within the same macvlan driver network with this `compose.yml`.
+Change IPs to those of your router. E.g. `192.168.1.254` to `192.168.0.1`.
+Remember to set the IP's as primary and secundary DNS addresses on your consoles internet settings, e.g. (according to this yml):
+
+* Nintendo Switch DNS Primary and Secundary address: `192.168.1.110`
+* Playstation 4 and/or Playstation 5 Primary DNS address: `192.168.1.111`
 
 ```yml
 ---
