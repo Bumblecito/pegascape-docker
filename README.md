@@ -62,9 +62,7 @@ You can install Fake News with <a href="https://github.com/noahc3/fakenews-injec
 
 ## Running PegaScape and Al-Azif PS4/PS5 self-hosting exploits with macvlan driver network
 
-You can run these images together in the same proyect on the same macvlan driver network with this compose.yml. Change the ip's to those of your router. E.g. `192.168.1.254` to `192.168.0.1`.
-
-
+You can run these images together into the same proyect with the same macvlan driver network with this `compose.yml`. Change the IPs to those of your router. E.g. `192.168.1.254` to `192.168.0.1`.
 
 ```yml
 ---
