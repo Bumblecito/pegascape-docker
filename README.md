@@ -2,7 +2,10 @@
   <a href=https://pegascape.sdsetup.com"><img src=https://i.imgur.com/H9ZLk33.png></a>
                                         </p>
                                         
-<h1 align=center>https://pegascape.sdsetup.com/<br><i>for user-friendly details</i></h1>
+## Why a docker image for PegaScape?
+
+PegaScape Public DNS IP Addresses are no longer available.
+To add more possibilities for users who still use deja-vu exploit to hack their 1.0.0 - 3.0.0 and 4.0.1 - 4.1.0 switch, this container image aims to make pegascape easily self-hostable. As a bonus, the execution of these exploits is quicker and more stable when used from a local appliance.
 
 ## What is PegaScape?
 
@@ -26,64 +29,108 @@ Other |	✗ |	✗ |	✗ |	✗ | 	✗
 
 † nvcore offsets missing for 4.0.0
 
-## Demo
 
-[1.0.0 Switch booting into emuMMC 8.0.1](https://www.youtube.com/watch?v=hjZvmoRjA1U)
+Build image
+Build pegascape image is as simple as using docker build.
 
-[4.1.0 Switch booting into Atmosphere CFW](https://www.youtube.com/watch?v=DBVjrjoZO8w)
+`docker build .`
 
+Launch container
 
-## Usage
+`docker run -p 80:80 -p 53:53/udp -p 8100:8100 -e IP_ADDR=<YOUR_DOCKER_HOST_IP> --name pegascape -d -t bumblecito/pegascape`
 
-Follow https://switch.homebrew.guide for an easy to follow noob guide for going from stock 1.0.0 - 3.0.0 and 4.0.1 - 4.1.0 with PegaScape. Otherwise, if you want to jump in...
+Pegascape must be exposed on
 
-### Public DNS IP Addresses
+`port 80`
+in order to reach frontend
 
-We provide a public DNS IP for each common browser entrypoint present on the Switch:
+`port 53`
+in order to expose a DNS server which forbidden access to nintendo services, and redirect switch to this container
 
-**Webapplet (Fake News, 1.0 JP Puyo Puyo Tetris)**: 163.172.181.170
+`port 8100`
+for exploit to work
 
-**Wifi Authentication Prompt**:	51.15.245.41
+`-t`
+options is needed to attach a tty to container, in order to keep alive the node command
 
-Note that these public DNS servers run the 90DNS configuration. This means that the connection test will pass (for the Webapplet server) and you can use homebrew with internet functionality, but you will not be able to connect to Nintendo services.
+Configure switch to access pegascape
+Modify your internet configuration on switch to use as primary and secondary the host IP of the machine which is used to launch pegascape. You won't be able to access to internet with this configuration, but pegascape will still be available in order to launch the deja-vu exploit.
 
 You can install Fake News with <a href="https://github.com/noahc3/fakenews-injector/releases/latest">Fake News Injector</a>
 
-### Self Hosting
+## Running PegaScape and Al-Azif PS4/PS5 self-hosting exploits with macvlan driver network
 
-You can also self-host PegaScape yourself:
+You can run these images together in the same proyect on the same macvlan driver network with this compose.yml. Change the ip's to those of your router. E.g. `192.168.1.254` to `192.168.0.1`.
 
-1. Install NodeJS and NPM.
-2. Clone the repo.
-3. Open cmd/terminal in the cloned directory.
-4. Run `npm install`.
-5. Run `[sudo] node start.js [--webapplet] [--ip <html_server_ip_override>] [--host <dns_server_ip_override] [--disable-dns]`.
-    * `--webapplet`: To enable fake internet, allowing the Switch to pass the connection test and load things like Fake News.
-    * `--ip <html_server_ip_override>` if the detected IP address for the HTML server is not preffered.
-    * `--host <dns_server_ip_override` if the detected IP address for the DNS server is not preffered.
-    * `--disable-dns` if you want to disable the internal DNS server and use something else (dnsmasq, bind, etc).
-    * Root privileges are usually required on Linux to bind to port 80 and 53.
-    
-## Changes from PegaSwitch
 
-* Logging is disabled by default (enable with "debug": true).
-* Homepage is used to select exploits. Can be configured in `config.json`, and are automatically appended to `index.html` based on the connecting clients firmware version and the firmware requirements specified for each exploit.
-* All device switching logic is removed/disabled.
-* Websockets are never stored anywhere and are kicked off after the initial connection process completes.
-* minmain.js is not run until an exploit is picked, rather than immediately when the page loads.
-* You cannot interface with Switches through the CLI.
-* Gadgetcache writes are disabled by default (enable with "debug": true).
-* Endpoints not fit for a public server were removed.
-* Some functionality which could be exploited on the server was removed or tweaked.
-* Probably other stuff.
 
-## Liability
-
-Nobody is responsible if you lose your data, brick your Switch, get banned, drop your Switch into the toilet, have your Switch stolen by ninjas, etc, except yourself. By using PegaScape or any form of homebrew in any capacity you understand the risks involved with running unsigned code on your Switch.
+```yml
+---
+version: "3.8"
+services:
+  pegascape:
+    image: bumblecito/pegascape:latest
+    ports:
+      - 80:80/tcp
+      - 53:53/udp
+      - 8100:8100/udp
+    environment:
+      IP_ADDR: 192.168.1.110
+    tty: true
+    restart: unless-stopped
+    networks:
+      lan:
+       ipv4_address: 192.168.1.110 # Change me for some ip inside your macvlan subnet!
+  dns:
+    image: alazif/exploit-host-dns
+    ports:
+      - 53:53/tcp
+      - 53:53/udp
+    environment:
+      REDIRECT_IPV4: 192.168.1.111 # Change me for ipv4_address
+      # REDIRECT_IPV6:  # Set me if wanted and uncomment line
+    restart: unless-stopped
+    networks:
+      lan:
+       ipv4_address: 192.168.1.111 # Change me for some ip inside your macvlan subnet!
+  http:
+    image: alazif/exploit-host-http
+    ports:
+      - 80:80/tcp
+      - 443:443/tcp
+    environment:
+      REDIRECT_TYPE: https # http or https
+      ROOT_DOMAIN: github.com
+      ROOT_DOMAIN_PATH: /Al-Azif/
+      # HIJACK_URL: www.google.com
+    restart: unless-stopped
+    networks:
+      lan:
+       ipv4_address: 192.168.1.112 # Change me for some ip inside your macvlan subnet!
+  watchtower:
+    image: containrrr/watchtower
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    command: --cleanup --interval 300
+    restart: unless-stopped
+    networks:
+      lan:
+       ipv4_address: 192.168.1.113 # Change me for some ip inside your macvlan subnet!
+networks:
+  lan:
+    driver: macvlan
+    driver_opts:
+      parent: eth0 # Change me if necessary!
+    ipam:
+      config:
+        - subnet: "192.168.1.0/24"
+          gateway: "192.168.1.1"  # Change me for your router lan ip!
+```
 
 ## Credits
 
 * ReSwitched, hexkyz and other contributors for PegaSwitch.
+* Al-Azif for PS4/PS5 Exploit Host DNS
 * Everyone who worked on smhax, nvhax, nspwn, etc.
 * liuervehc for <a href="https://github.com/liuervehc/caffeine/">Caffeine</a>, bringing the first CFW to IPATCHED Switches, and dealing with my random support DMs.
 * stuck_pixel for <a href="https://github.com/pixel-stuck/nereba/">Nereba</a> and <a href="https://github.com/pixel-stuck/reboot_to_rcm">reboot_to_rcm</a>.
