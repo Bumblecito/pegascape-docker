@@ -1,6 +1,8 @@
 <p align="center">
   <a href=https://pegascape.sdsetup.com"><img src=https://i.imgur.com/H9ZLk33.png></a>
                                         </p>
+
+<h1 align=center>https://hub.docker.com/r/bumblecito/pegascape<br><i>for user-friendly details</i></h1>
                                         
 ## Why a docker image for PegaScape?
 
