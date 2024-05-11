@@ -1,13 +1,60 @@
-version: '3'
+---
+version: "3.8"
 services:
-  pegaswitch:
-    container_name: pegaswitch
-    build: .
-    # Uncomment only if you want to devleop on app locally and within container. If just running app no need to do anything. #
-    # volumes:
-    #   - .:/opt/app
+  pegascape:
+    image: bumblecito/pegascape:latest
     ports:
-      - 80:80
-      - 53:53
-      - 8100:8100
-    restart: always
+      - 80:80/tcp
+      - 53:53/udp
+      - 8100:8100/udp
+    environment:
+      IP_ADDR: 192.168.1.110
+    tty: true
+    restart: unless-stopped
+    networks:
+      lan:
+       ipv4_address: 192.168.1.110 # Change me for some ip inside your macvlan subnet!
+  dns:
+    image: alazif/exploit-host-dns
+    ports:
+      - 53:53/tcp
+      - 53:53/udp
+    environment:
+      REDIRECT_IPV4: 192.168.1.111 # Change me for ipv4_address
+      # REDIRECT_IPV6:  # Set me if wanted and uncomment line
+    restart: unless-stopped
+    networks:
+      lan:
+       ipv4_address: 192.168.1.111 # Change me for some ip inside your macvlan subnet!
+  http:
+    image: alazif/exploit-host-http
+    ports:
+      - 80:80/tcp
+      - 443:443/tcp
+    environment:
+      REDIRECT_TYPE: https # http or https
+      ROOT_DOMAIN: github.com
+      ROOT_DOMAIN_PATH: /Al-Azif/
+      # HIJACK_URL: www.google.com
+    restart: unless-stopped
+    networks:
+      lan:
+       ipv4_address: 192.168.1.112 # Change me for some ip inside your macvlan subnet!
+  watchtower:
+    image: containrrr/watchtower
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    command: --cleanup --interval 300
+    restart: unless-stopped
+    networks:
+      lan:
+       ipv4_address: 192.168.1.113 # Change me for some ip inside your macvlan subnet!
+networks:
+  lan:
+    driver: macvlan
+    driver_opts:
+      parent: eth0 # Change me if necessary!
+    ipam:
+      config:
+        - subnet: "192.168.1.0/24"
+          gateway: "192.168.1.1"  # Change me for your router lan ip!
